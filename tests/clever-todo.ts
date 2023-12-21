@@ -34,4 +34,83 @@ describe("clever-todo", () => {
       .rpc();
     console.log("Your transaction signature", tx);
   });
+
+  const TODO_TAG = "TODO_STATE";
+  const lastTodoAsU8 = new Uint8Array([0]);
+
+  it("Adds a todo", async () => {
+    const [userAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(USER_TAG), authority.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [todoAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(TODO_TAG), authority.publicKey.toBuffer(), lastTodoAsU8],
+      program.programId
+    );
+
+    const tx = await program.methods
+      .addTodo("first Todo")
+      .accounts({
+        userProfile: userAccountAddress,
+        todoAccount: todoAccountAddress,
+        authority: authority.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([authority])
+      .rpc();
+    console.log("Your txn is :", tx);
+  });
+
+  const todoIdx = 0;
+
+  it("marks a todo", async () => {
+    const [userAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(USER_TAG), authority.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [todoAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(TODO_TAG), authority.publicKey.toBuffer(), lastTodoAsU8],
+      program.programId
+    );
+
+    const tx = await program.methods
+      .markTodo(todoIdx)
+      .accounts({
+        userProfile: userAccountAddress,
+        todoAccount: todoAccountAddress,
+        authority: authority.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([authority])
+      .rpc();
+    console.log("Your txn is :", tx);
+  });
+
+  const todoIdxToRemove = 0;
+  it("removes a todo", async () => {
+    const [userAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(USER_TAG), authority.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [todoAccountAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from(TODO_TAG), authority.publicKey.toBuffer(), lastTodoAsU8],
+      program.programId
+    );
+
+    const tx = await program.methods
+      .removeTodo(todoIdxToRemove)
+      .accounts({
+        userProfile: userAccountAddress,
+        todoAccount: todoAccountAddress,
+        authority: authority.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([authority])
+      .rpc();
+    console.log("Your txn is :", tx);
+  });
 });
+
